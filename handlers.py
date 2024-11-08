@@ -1,5 +1,3 @@
-# handlers.py
-
 from telegram.ext import (
     CommandHandler,
     CallbackQueryHandler,
@@ -14,17 +12,14 @@ from config import USERS, save_users
 
 logger = logging.getLogger(__name__)
 
-# Определение состояний для ConversationHandler
 CHANGE_NAME, ADD_EMPLOYEE, DELETE_EMPLOYEE = range(3)
 
 def get_user(user_id):
-    """Получает пользователя по его ID."""
     user = next((user for user in USERS if user["id"] == user_id), None)
     logger.debug(f"Получен пользователь: {user}")
     return user
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик команды /start."""
     logger.info("Команда /start вызвана")
     if update.message:
         user_id = update.message.from_user.id
@@ -69,7 +64,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 async def admin_panel_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Меню Admin Panel с динамической кнопкой 'Преступить к работе'."""
     logger.info("Переход в Admin Panel")
     query = update.callback_query
     user_id = query.from_user.id
@@ -93,11 +87,9 @@ async def admin_panel_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("Удалить сотрудника", callback_data='delete_employee')],
     ]
 
-    # Добавляем кнопку 'Преступить к работе' только если on_shift=True
     if user.get('on_shift', False):
         inline_keyboard.append([InlineKeyboardButton("Преступить к работе", callback_data='proceed_to_work')])
 
-    # Кнопка возврата в главное меню
     inline_keyboard.append([InlineKeyboardButton("Вернуться в главное меню", callback_data='main_menu')])
 
     reply_markup_inline = InlineKeyboardMarkup(inline_keyboard)
@@ -108,7 +100,6 @@ async def admin_panel_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def personnel_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Меню Personnel."""
     logger.info("Переход в Personnel Menu")
     query = update.callback_query
     user_id = query.from_user.id
@@ -124,17 +115,14 @@ async def personnel_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.warning(f"Пользователь {user_id} не имеет роли 'personnel'.")
         return
 
-    # Базовые кнопки
     inline_keyboard = [
         [InlineKeyboardButton("Начать смену", callback_data='start_shift')],
         [InlineKeyboardButton("Закончить смену", callback_data='end_shift')],
     ]
 
-    # Добавляем кнопку 'Преступить к работе' только если on_shift=True
     if user.get('on_shift', False):
         inline_keyboard.append([InlineKeyboardButton("Преступить к работе", callback_data='proceed_to_work')])
 
-    # Кнопка возврата в главное меню
     inline_keyboard.append([InlineKeyboardButton("Вернуться в главное меню", callback_data='main_menu')])
 
     reply_markup_inline = InlineKeyboardMarkup(inline_keyboard)
@@ -145,7 +133,6 @@ async def personnel_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик всех нажатий кнопок."""
     query = update.callback_query
     await query.answer()
     user_id = query.from_user.id
@@ -189,14 +176,14 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             logger.warning(f"Пользователь {user_id} попытался удалить сотрудника без прав администратора.")
     elif query.data == 'start_shift':
         await start_shift(update, context)
-        return ConversationHandler.END  # Завершаем текущий ConversationHandler, если используется
+        return ConversationHandler.END
     elif query.data == 'end_shift':
         await end_shift(update, context)
-        return ConversationHandler.END  # Завершаем текущий ConversationHandler, если используется
+        return ConversationHandler.END
     elif query.data == 'proceed_to_work':
         await proceed_to_work(update, context)
     elif query.data in ['write_off_product', 'add_product', 'cancel_sale', 'product_stock', 'check_stock_quantity']:
-        # Обработка функциональных кнопок рабочего меню
+
         await handle_operational_buttons(update, context, query.data, user_id)
     elif query.data == 'main_menu':
         await start(update, context)
@@ -205,7 +192,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.warning(f"Неизвестный callback_data: {query.data}")
 
 async def handle_operational_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE, callback_data: str, user_id: int):
-    """Обработка функциональных кнопок рабочего меню."""
+
     query = update.callback_query
     user = get_user(user_id)
 
@@ -214,9 +201,9 @@ async def handle_operational_buttons(update: Update, context: ContextTypes.DEFAU
         logger.warning(f"Пользователь {user_id} попытался выполнить операцию без активной смены.")
         return
 
-    # Определяем доступные операции на основе роли
+
     if user["role"] == "admin":
-        # Администратор может выполнять все операции
+
         operations = {
             'write_off_product': write_off_product,
             'add_product': add_product,
@@ -225,7 +212,7 @@ async def handle_operational_buttons(update: Update, context: ContextTypes.DEFAU
             'check_stock_quantity': check_stock_quantity
         }
     else:
-        # Сотрудник не имеет доступа к административным функциям (если такие имеются)
+
         operations = {
             'write_off_product': write_off_product,
             'add_product': add_product,
@@ -289,7 +276,7 @@ async def proceed_to_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.debug(f"Отправлено рабочее меню для роли '{user['role']}'.")
 
 async def add_employee(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Добавление нового сотрудника."""
+
     logger.info("Добавление нового сотрудника")
     try:
         new_employee_id = int(update.message.text)
@@ -299,7 +286,7 @@ async def add_employee(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.error("Введён некорректный ID для нового сотрудника.")
         return ADD_EMPLOYEE
 
-    # Проверка, существует ли уже пользователь с таким ID
+
     if get_user(new_employee_id):
         await update.effective_message.reply_text("Сотрудник с таким ID уже существует.")
         logger.warning(f"Попытка добавить существующего сотрудника с ID {new_employee_id}.")
@@ -352,7 +339,7 @@ async def delete_employee(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.warning(f"Попытка удалить несуществующего сотрудника с ID {employee_id}.")
         return DELETE_EMPLOYEE
 
-    # Удаление сотрудника из списка
+
     USERS.remove(user)
     save_users(USERS)
     logger.info(f"Сотрудник с ID {employee_id} удалён.")
@@ -370,7 +357,7 @@ async def delete_employee(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 async def change_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Изменение имени пользователя."""
+
     logger.info("Изменение имени пользователя")
     try:
         user_id = update.message.from_user.id
@@ -405,12 +392,10 @@ async def start_shift(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = get_user(user_id)
 
     if user:
-        # Устанавливаем статус смены в True
         user['on_shift'] = True
         save_users(USERS)
         logger.info(f"Пользователь {user['name']} начал смену.")
 
-        # Обновляем меню Admin Panel или Personnel Menu в зависимости от роли
         if user["role"] == "admin":
             await admin_panel_menu(update, context)
         else:
@@ -421,18 +406,15 @@ async def start_shift(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.error(f"Пользователь с ID {user_id} не найден при попытке начать смену.")
 
 async def end_shift(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка окончания смены."""
     query = update.callback_query
     user_id = query.from_user.id
     user = get_user(user_id)
 
     if user and user.get('on_shift', False):
-        # Устанавливаем статус смены в False
         user['on_shift'] = False
         save_users(USERS)
         logger.info(f"Пользователь {user['name']} закончил смену.")
 
-        # Обновляем меню Admin Panel или Personnel Menu в зависимости от роли
         if user["role"] == "admin":
             await admin_panel_menu(update, context)
         else:
@@ -443,7 +425,6 @@ async def end_shift(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.warning(f"Пользователь {user_id} попытался завершить неактивную смену.")
 
 async def proceed_to_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Меню с кнопками для операций во время смены."""
     query = update.callback_query
     user_id = query.from_user.id
     user = get_user(user_id)
@@ -459,7 +440,6 @@ async def proceed_to_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if user["role"] == "admin":
-        # Меню для администратора
         inline_keyboard = [
             [InlineKeyboardButton("Списать товар", callback_data='write_off_product')],
             [InlineKeyboardButton("Добавить товар", callback_data='add_product')],
@@ -470,7 +450,6 @@ async def proceed_to_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("Вернуться в Admin Panel", callback_data='admin_panel')]
         ]
     else:
-        # Меню для сотрудника
         inline_keyboard = [
             [InlineKeyboardButton("Списать товар", callback_data='write_off_product')],
             [InlineKeyboardButton("Добавить товар", callback_data='add_product')],
@@ -490,7 +469,6 @@ async def proceed_to_work(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.debug(f"Отправлено рабочее меню для роли '{user['role']}'.")
 
 async def write_off_product(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Функция списания товара."""
     await update.effective_message.reply_text("Функция списания товара ещё не реализована.")
     logger.info("Пользователь выбрал 'Списать товар'.")
 

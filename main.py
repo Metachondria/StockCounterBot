@@ -1,5 +1,3 @@
-# main.py
-
 import logging
 from telegram.ext import (
     ApplicationBuilder,
@@ -46,10 +44,8 @@ if __name__ == '__main__':
 
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # Основная команда /start
     app.add_handler(CommandHandler("start", start))
 
-    # ConversationHandler для состояний CHANGE_NAME, ADD_EMPLOYEE и DELETE_EMPLOYEE
     conv_handler = ConversationHandler(
         entry_points=[CallbackQueryHandler(button_handler, pattern='^(change_name|add_employee|delete_employee)$')],
         states={
@@ -61,32 +57,26 @@ if __name__ == '__main__':
     )
     app.add_handler(conv_handler)
 
-    # Добавление обработчиков для кнопок начала и окончания смены
     app.add_handler(CallbackQueryHandler(start_shift, pattern='^start_shift$'))
     app.add_handler(CallbackQueryHandler(end_shift, pattern='^end_shift$'))
 
-    # Добавление обработчика для кнопки 'Преступить к работе'
     app.add_handler(CallbackQueryHandler(proceed_to_work, pattern='^proceed_to_work$'))
 
-    # Добавление обработчиков для функциональных кнопок рабочего меню
     app.add_handler(CallbackQueryHandler(write_off_product, pattern='^write_off_product$'))
     app.add_handler(CallbackQueryHandler(add_product, pattern='^add_product$'))
     app.add_handler(CallbackQueryHandler(cancel_sale, pattern='^cancel_sale$'))
     app.add_handler(CallbackQueryHandler(product_stock, pattern='^product_stock$'))
     app.add_handler(CallbackQueryHandler(check_stock_quantity, pattern='^check_stock_quantity$'))
 
-    # Добавляем обработчики для административных и персональных кнопок
     app.add_handler(CallbackQueryHandler(button_handler, pattern='^admin_panel$'))
     app.add_handler(CallbackQueryHandler(button_handler, pattern='^personnel$'))
     app.add_handler(CallbackQueryHandler(button_handler, pattern='^main_menu$'))
 
-    # Глобальный обработчик ошибок
     async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
         logger.error(msg="Exception while handling an update:", exc_info=context.error)
 
     app.add_error_handler(error_handler)
 
-    # Запускаем бота
     try:
         logger.info("Бот запущен")
         app.run_polling()
