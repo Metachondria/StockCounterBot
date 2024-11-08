@@ -68,14 +68,14 @@ if __name__ == '__main__':
     # Добавление обработчика для кнопки 'Преступить к работе'
     app.add_handler(CallbackQueryHandler(proceed_to_work, pattern='^proceed_to_work$'))
 
-    # Добавление обработчиков для функциональных кнопок рабочего меню
+    # Добавление обработчиков для новых функциональных кнопок
     app.add_handler(CallbackQueryHandler(write_off_product, pattern='^write_off_product$'))
     app.add_handler(CallbackQueryHandler(add_product, pattern='^add_product$'))
     app.add_handler(CallbackQueryHandler(cancel_sale, pattern='^cancel_sale$'))
     app.add_handler(CallbackQueryHandler(product_stock, pattern='^product_stock$'))
     app.add_handler(CallbackQueryHandler(check_stock_quantity, pattern='^check_stock_quantity$'))
 
-    # Добавляем обработчики для административных и персональных кнопок
+    # Добавляем другие CallbackQueryHandler для остальных кнопок
     app.add_handler(CallbackQueryHandler(button_handler, pattern='^admin_panel$'))
     app.add_handler(CallbackQueryHandler(button_handler, pattern='^personnel$'))
     app.add_handler(CallbackQueryHandler(button_handler, pattern='^main_menu$'))

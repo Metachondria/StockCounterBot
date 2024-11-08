@@ -13,9 +13,15 @@
             "on_shift": false
         },
         {
+            "id": 898778766,
+            "name": "Lansqoy",
+            "role": "admin",
+            "on_shift": false
+        },
+        {
             "id": 829127171,
             "name": "NoName",
-            "role": "admin",
+            "role": "personnel",
             "on_shift": false
         }
     ]
