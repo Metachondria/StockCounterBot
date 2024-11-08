@@ -1,0 +1,22 @@
+{
+    "users": [
+        {
+            "id": 1030863337,
+            "name": "ggilyav",
+            "role": "admin",
+            "on_shift": false
+        },
+        {
+            "id": 1166908097,
+            "name": "Misha",
+            "role": "admin",
+            "on_shift": false
+        },
+        {
+            "id": 829127171,
+            "name": "NoName",
+            "role": "admin",
+            "on_shift": false
+        }
+    ]
+}
