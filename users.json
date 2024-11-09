@@ -4,22 +4,28 @@
             "id": 1030863337,
             "name": "ggilyav",
             "role": "admin",
-            "on_shift": false
+            "on_shift": true
         },
         {
             "id": 1166908097,
-            "name": "Misha",
+            "name": "Mihail",
             "role": "admin",
-            "on_shift": false
+            "on_shift": true
         },
         {
             "id": 898778766,
             "name": "Lansqoy",
             "role": "admin",
-            "on_shift": false
+            "on_shift": true
         },
         {
             "id": 829127171,
+            "name": "NoName",
+            "role": "personnel",
+            "on_shift": false
+        },
+        {
+            "id": 0,
             "name": "NoName",
             "role": "personnel",
             "on_shift": false

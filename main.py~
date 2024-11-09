@@ -8,6 +8,7 @@ from telegram.ext import (
     filters,
     ContextTypes
 )
+from telegram import Update, ReplyKeyboardMarkup
 from config import TOKEN
 from handlers import (
     start,
@@ -48,8 +49,16 @@ if __name__ == '__main__':
 
     app = ApplicationBuilder().token(TOKEN).build()
 
-    # Основная команда /start
-    app.add_handler(CommandHandler("start", start))
+    # Основная команда /start с клавиатурой
+    async def start_with_keyboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
+        reply_keyboard = [['Начать']]
+        markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True)
+        await update.message.reply_text(
+            "Добро пожаловать! Используйте кнопку 'Начать' для начала.",
+            reply_markup=markup
+        )
+
+    app.add_handler(CommandHandler("start", start_with_keyboard))
 
     # ConversationHandler для состояний CHANGE_NAME, ADD_EMPLOYEE, DELETE_EMPLOYEE и INPUT_QUANTITY
     conv_handler = ConversationHandler(

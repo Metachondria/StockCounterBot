@@ -614,13 +614,10 @@ logger = logging.getLogger(__name__)
 # Состояние для обработки количества
 INPUT_QUANTITY = range(1)
 
-
 async def handle_quantity_input(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Получаем введенное количество
     quantity_str = update.message.text
-    logger.debug(f"Получено количество: {quantity_str}")
-
     product = context.user_data.get('selected_product')  # Получаем выбранный продукт
-    logger.debug(f"User data перед обработкой количества: {context.user_data}")
 
     # Проверка, что продукт выбран и сохранен в user_data
     if not product:
@@ -638,16 +635,11 @@ async def handle_quantity_input(update: Update, context: ContextTypes.DEFAULT_TY
     logger.debug(f"Получено количество: {quantity} для товара: {product}")
 
     # Обновляем количество товара в Google Таблице
-    try:
-        success, new_quantity = update_product_quantity_by_row(
-            sheet_name="K15_SKLAD",
-            product_name=product,
-            quantity=quantity
-        )
-    except Exception as e:
-        logger.error(f"Ошибка при попытке обновления количества в Google Sheets: {e}")
-        await update.message.reply_text("Произошла ошибка при обновлении количества товара.")
-        return ConversationHandler.END
+    success, new_quantity = update_product_quantity_by_row(
+        sheet_name="K15_SKLAD",
+        product_name=product,
+        quantity=quantity
+    )
 
     # Обработка результата обновления
     if success:
@@ -663,6 +655,5 @@ async def handle_quantity_input(update: Update, context: ContextTypes.DEFAULT_TY
         logger.error("Ошибка при обновлении количества товара.")
 
     return ConversationHandler.END
-
 
 
